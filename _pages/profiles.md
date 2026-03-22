@@ -32,7 +32,7 @@ profiles:
     twitter: https://x.com/_berlinchen
 
   - role: phd-student
-    image: selfie.png
+    image: selfie.jpeg
     name: Wentao Guo
     website: https://wentaoguo.me
  
@@ -47,16 +47,16 @@ profiles:
     website: https://derrickylj.github.io/
 
   - role: phd-student
-    image: Liane.png
+    image: Liane.jpg
     name: Liane Galanti
     website: https://lianegalanti.github.io
 
   - role: phd-student
-    image: ZhuoqingSong.png
+    image: ZhuoqingSong.jpg
     name: Zhuoqing Song 
   
   - role: phd-student
-    image: mayank.png
+    image: Mayank.jpg
     name: Mayank Mishra
     website: https://mayankmishra.github.io/
 
