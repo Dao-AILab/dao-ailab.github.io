@@ -3,34 +3,251 @@ layout: page
 ---
 <div class="post">
   <article>
-    {% if page.profiles %}
-      {% for profile in page.profiles %}
-        <hr>
-        <div class="profile float-{% if profile.align == 'left' %}left{% else %}right{% endif %}">
-          {% if profile.image %}
-            {% assign profile_image_path = profile.image | prepend: 'assets/img/' %}
-            {% if profile.image_circular %}
-              {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
-            {% else %}
-              {% assign profile_image_class = 'img-fluid z-depth-1 rounded' %}
-            {% endif %}
-            {% capture sizes %}(min-width: {{ site.max_width }}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px) 30vw, 95vw"{% endcapture %}
-            {% include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=profile.image %}
-          {% endif %}
-          {% if profile.more_info %}
-            <div class="more-info">{{ profile.more_info }}</div>
-          {% endif %}
-        </div>
 
-        <div class="clearfix">
-          {% if profile.content %}
-            {% capture profile_content %}{% include_relative {{ profile.content }} %}{% endcapture %}
-            {{ profile_content | markdownify }}
-          {% else %}
-            {{ content }}
-          {% endif %}
+    <div class="clearfix">{{ content }}</div>
+
+    {% if page.profiles %}
+      <!-- Faculty -->
+      {% assign faculty_profiles = page.profiles | where: "role", "faculty" %}
+      {% if faculty_profiles.size > 0 %}
+        <hr>
+        <div>
+          <h4>faculty</h4>
         </div>
-      {% endfor %}
+        <div class="pi-grid">
+          {% for profile in faculty_profiles %}
+            <div class="profile pi-profile">
+              {% if profile.image %}
+                {% assign profile_image_path = profile.image | prepend: 'assets/img/' %}
+                {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
+                {% capture sizes %}(min-width: {{site.max_width}}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px) 30vw, 95vw"{% endcapture %}
+                {% include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=profile.name %}
+              {% endif %}
+              {% if profile.name %}
+                <h3>{{ profile.name }}</h3>
+              {% endif %}
+              {% if profile.more_info %}
+                <div class="more-info">{{ profile.more_info }}</div>
+              {% endif %}
+              <div class="profile-links">
+                {% if profile.google_scholar %}
+                  <a href="{{ profile.google_scholar }}" target="_blank"><i class="fab fa-google-scholar"></i></a>
+                {% endif %}
+                {% if profile.website %}
+                  <a href="{{ profile.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                {% endif %}
+                {% if profile.github %}
+                  <a href="{{ profile.github }}" target="_blank"><i class="fab fa-github"></i></a>
+                {% endif %}
+                {% if profile.linkedin %}
+                  <a href="{{ profile.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                {% endif %}
+                {% if profile.twitter %}
+                  <a href="{{ profile.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+          <div class="clearfix"></div>
+        </div>
+      {% endif %}
+
+      <!-- PhD Students -->
+      {% assign phd_profiles = page.profiles | where: "role", "phd-student" %}
+      {% if phd_profiles.size > 0 %}
+        <hr>
+        <div>
+          <h4>ph.d. students</h4>
+        </div>
+        <div id="phd-profiles" class="student-grid">
+          {% for profile in phd_profiles %}
+            <div class="profile">
+              {% if profile.image %}
+                {% assign profile_image_path = profile.image | prepend: 'assets/img/' %}
+                {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
+                {% capture sizes %}(min-width: {{site.max_width}}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px) 30vw, 95vw"{% endcapture %}
+                {% include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=profile.name %}
+              {% endif %}
+              {% if profile.name %}
+                <h3>{{ profile.name }}</h3>
+              {% endif %}
+              {% if profile.more_info %}
+                <div class="more-info">{{ profile.more_info }}</div>
+              {% endif %}
+              <div class="profile-links">
+                {% if profile.google_scholar %}
+                  <a href="{{ profile.google_scholar }}" target="_blank"><i class="fab fa-google-scholar"></i></a>
+                {% endif %}
+                {% if profile.website %}
+                  <a href="{{ profile.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                {% endif %}
+                {% if profile.github %}
+                  <a href="{{ profile.github }}" target="_blank"><i class="fab fa-github"></i></a>
+                {% endif %}
+                {% if profile.linkedin %}
+                  <a href="{{ profile.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                {% endif %}
+                {% if profile.twitter %}
+                  <a href="{{ profile.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Master's Students -->
+      {% assign ms_profiles = page.profiles | where: "role", "ms-student" %}
+      {% if ms_profiles.size > 0 %}
+        <hr>
+        <div>
+          <h4>master's students</h4>
+        </div>
+        <div id="ms-profiles" class="student-grid">
+          {% for profile in ms_profiles %}
+            <div class="profile">
+              {% if profile.image %}
+                {% assign profile_image_path = profile.image | prepend: 'assets/img/' %}
+                {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
+                {% capture sizes %}(min-width: {{site.max_width}}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px) 30vw, 95vw"{% endcapture %}
+                {% include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=profile.name %}
+              {% endif %}
+              {% if profile.name %}
+                <h3>{{ profile.name }}</h3>
+              {% endif %}
+              {% if profile.more_info %}
+                <div class="more-info">{{ profile.more_info }}</div>
+              {% endif %}
+              <div class="profile-links">
+                {% if profile.google_scholar %}
+                  <a href="{{ profile.google_scholar }}" target="_blank"><i class="fab fa-google-scholar"></i></a>
+                {% endif %}
+                {% if profile.website %}
+                  <a href="{{ profile.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                {% endif %}
+                {% if profile.github %}
+                  <a href="{{ profile.github }}" target="_blank"><i class="fab fa-github"></i></a>
+                {% endif %}
+                {% if profile.linkedin %}
+                  <a href="{{ profile.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                {% endif %}
+                {% if profile.twitter %}
+                  <a href="{{ profile.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Undergraduate Students -->
+      {% assign undergrad_profiles = page.profiles | where: "role", "undergrad" %}
+      {% if undergrad_profiles.size > 0 %}
+        <hr>
+        <div>
+          <h4>undergraduate students</h4>
+        </div>
+        <div id="undergrad-profiles" class="student-grid">
+          {% for profile in undergrad_profiles %}
+            <div class="profile">
+              {% if profile.image %}
+                {% assign profile_image_path = profile.image | prepend: 'assets/img/' %}
+                {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
+                {% capture sizes %}(min-width: {{site.max_width}}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px) 30vw, 95vw"{% endcapture %}
+                {% include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=profile.name %}
+              {% endif %}
+              {% if profile.name %}
+                <h3>{{ profile.name }}</h3>
+              {% endif %}
+              {% if profile.more_info %}
+                <div class="more-info">{{ profile.more_info }}</div>
+              {% endif %}
+              <div class="profile-links">
+                {% if profile.google_scholar %}
+                  <a href="{{ profile.google_scholar }}" target="_blank"><i class="fab fa-google-scholar"></i></a>
+                {% endif %}
+                {% if profile.website %}
+                  <a href="{{ profile.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                {% endif %}
+                {% if profile.github %}
+                  <a href="{{ profile.github }}" target="_blank"><i class="fab fa-github"></i></a>
+                {% endif %}
+                {% if profile.linkedin %}
+                  <a href="{{ profile.linkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                {% endif %}
+                {% if profile.twitter %}
+                  <a href="{{ profile.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
     {% endif %}
   </article>
 </div>
+
+<style>
+.student-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+@media (min-width: 768px) {
+  .student-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pi-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+@media (min-width: 768px) {
+  .pi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.profile {
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+}
+.profile img {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+.pi-profile img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.profile h3 {
+  margin-top: 10px;
+}
+.profile .more-info {
+  max-width: 150px;
+  margin: 0 auto;
+}
+.pi-profile .more-info {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.profile-links a {
+  display: inline-block;
+  margin: 5px 10px;
+  font-size: 1.2em;
+  color: var(--global-text-color);
+}
+.profile-links a:hover {
+  color: var(--global-theme-color);
+}
+</style>

@@ -1,28 +1,89 @@
 ---
 layout: profiles
-permalink: /people/
+permalink: /
 title: people
-description: members of the lab or group
-nav: true
+description: meet the team
+nav: false
 nav_order: 7
 
 profiles:
-  # if you want to include more than one profile, just replicate the following block
-  # and create one content file for each profile inside _pages/
-  - align: right
-    image: prof_pic.jpg
-    content: about_einstein.md
-    image_circular: false # crops the image to make it circular
+  - role: faculty
+    image: tri_dao.jpeg
+    name: Tri Dao
     more_info: >
-      <p>555 your office number</p>
-      <p>123 your address street</p>
-      <p>Your City, State 12345</p>
-  - align: left
-    image: prof_pic.jpg
-    content: about_einstein.md
-    image_circular: false # crops the image to make it circular
-    more_info: >
-      <p>555 your office number</p>
-      <p>123 your address street</p>
-      <p>Your City, State 12345</p>
+      Assistant Professor of Computer Science, Princeton University
+    google_scholar: https://scholar.google.com/citations?hl=en&user=NQRw0bQAAAAJ
+    website: https://tridao.me
+    github: https://github.com/tridao
+    twitter: https://x.com/tri_dao
+
+  - role: phd-student
+    image: IMG_0140.PNG
+    name: Ted Zadouri
+    google_scholar: https://www.linkedin.com/in/tedzed/
+    # website:
+    # github:
+
+  - role: phd-student
+    image: chen_pic.png
+    name: Berlin Chen
+    google_scholar: https://scholar.google.com/citations?user=GkCmZ18AAAAJ&hl=en
+    linkedin: https://www.linkedin.com/in/berlinchen/
+    twitter: https://x.com/_berlinchen
+
+  - role: phd-student
+    image: selfie.png
+    name: Wentao Guo
+    website: https://wentaoguo.me
+ 
+  - role: phd-student
+    image: xinle.png
+    name: Xinle Cheng
+    website: https://ada-cheng.github.io/
+
+  - role: phd-student
+    image: IMG_9228.jpg
+    name: Lijie(Derrick) Yang 
+    website: https://derrickylj.github.io/
+
+  - role: phd-student
+    image: Liane.png
+    name: Liane Galanti
+    website: https://lianegalanti.github.io
+
+  - role: phd-student
+    image: ZhuoqingSong.png
+    name: Zhuoqing Song 
+  
+  - role: phd-student
+    image: mayank.png
+    name: Mayank Mishra
+    website: https://mayankmishra.github.io/
+
+  - role: ms-student
+    image: photo_2026.jpg
+    name: Nicholas Yap
+
+  - role: undergrad
+    image: headshot.jpg
+    name: Jack Zhang
+    linkedin: https://x.com/jcz42
+
+  - role: undergrad
+    image: image-8.png
+    name: Caitlin Wang
+    linkedin: https://www.linkedin.com/in/caitlin-wang-8527a2231/
+
+  - role: undergrad
+    image: image.jpg
+    name: Arjun Menon
+    linkedin: https://a-menon.github.io
+
+  - role: undergrad
+    image: image-9.png
+    name: Abiral Shakya
+    linkedin: https://abiralshakya.github.io
 ---
+
+
+We are a research group at [Princeton University](https://www.princeton.edu/) led by professor Tri Dao.
