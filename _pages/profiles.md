@@ -50,6 +50,10 @@ profiles:
     image: Liane.jpg
     name: Liane Galanti
     website: https://lianegalanti.github.io
+    twitter: https://x.com/lianegalanti
+    linkedin: https://www.linkedin.com/in/liane-galanti-31879923a
+    github: https://github.com/lianegalanti
+    google_scholar: https://scholar.google.com/citations?user=8jDgDJIAAAAJ&hl=en
 
   - role: phd-student
     image: ZhuoqingSong.jpg
@@ -58,7 +62,7 @@ profiles:
   - role: phd-student
     image: Mayank.jpg
     name: Mayank Mishra
-    website: https://mayankmishra.github.io/
+    website: https://mayank31398.github.io/
 
   - role: ms-student
     image: photo_2026.jpg
