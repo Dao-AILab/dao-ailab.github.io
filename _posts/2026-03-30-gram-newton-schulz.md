@@ -157,7 +157,7 @@ Third, to take full advantage of the latest generation of GPUs and of the mathem
 
 <!-- Second, we show how to rewrite the Newton-Schulz iteration in a form that is *mathematically identical* but computationally advantageous. In this new form—which we call [Naive Gram Newton-Schulz](#alg-naive-gram-ns)—multiplications of large rectangular matrices are replaced with symmetric multiplications of small square matrices. -->
 
-Finally, we replace Muon's Newton-Schulz routine with Gram Newton-Schulz, which we denote **GramMuon**, and observe a 40-50% reduction in the runtime of the orthogonalization step. Experiments confirm that training language models with GramMuon is stable and preserves the optimization quality of the standard version within $0.01$ validation perplexity, making our algorithm a rare instance of "free lunch" performance improvement.
+Finally, we replace Muon's Newton-Schulz routine with Gram Newton-Schulz, an optimizer we call **GramMuon**, and observe a 40-50% reduction in the runtime of the orthogonalization step. Experiments confirm that training language models with GramMuon is stable and preserves the optimization quality of the standard version within $0.01$ validation perplexity, making our algorithm a rare instance of "free lunch" performance improvement.
 
 To facilitate the adoption of Gram Newton-Schulz, we release the following open-source implementations:
 
