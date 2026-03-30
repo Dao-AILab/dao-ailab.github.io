@@ -119,7 +119,7 @@ html[data-theme='dark'] .post blockquote mjx-container * {
 }
 </style>
 
-Muon is becoming the optimizer of choice for training state-of-the-art language models like Kimi K2 Thinking and GLM-5.[^kimi][^GLM] Compared to AdamW, Muon needs fewer optimizer steps to reach a given loss, but each step is more expensive. This overhead is due to Muon's Newton-Schulz orthogonalization procedure, a cubic time matrix operation not present in older optimizers.
+Muon is becoming the optimizer of choice for training state-of-the-art language models like Kimi K2 Thinking[^kimi] and GLM-5.[^GLM] Compared to AdamW, Muon needs fewer optimizer steps to reach a given loss, but each step is more expensive. This overhead is due to Muon's Newton-Schulz orthogonalization procedure, a cubic time matrix operation not present in older optimizers.
 
 <!-- Still, on net, Muon is superior in the way that matters most: it trains an equally good model in a shorter amount of time.Or "On balance, Muon is superior in the way that matters most: it produces an equally good model in a shorter amount of time" -->
 
@@ -127,7 +127,7 @@ Muon is becoming the optimizer of choice for training state-of-the-art language 
 
 _Figure 1: AdamW vs. Muon: Wall clock time of optimizer step across Llama model sizes, benchmarked on B300._
 
-Muon's superior optimization quality justifies its more expensive optimizer step. However, as model size scales up, the overhead of computing each Muon step grows rapidly. Traditional optimization methods (SGD, AdamW) perform element-wise operations, such as updating the momentum or rescaling it by the second moment. For a weight matrix of size $n \times m$, performing the optimizer step takes $O(mn)$ time given the gradient matrix as input. In contrast, many modern optimizers (Muon, Scion, Dion, SOAP, Shampoo, SPlus, etc.) use orthogonalization or higher-order preconditioning to compute the update to the weights at each training step.[^muon][^dion][^scion][^soap][^shampoo][^splus] These methods require matrix multiplications that cost $O(mn^2)$ time (assuming $n \leq m$). Therefore, the runtime of each call to the optimizer is far greater than for AdamW. Depending on the training setup (global batch size, cluster size, and parallelism settings), Newton-Schulz accounts for between [2% and 17%](#appendix) of end-to-end wall clock time.
+Muon's superior optimization quality justifies its more expensive optimizer step. However, as model size scales up, the overhead of computing each Muon step grows rapidly. Traditional optimization methods (SGD, AdamW) perform element-wise operations, such as updating the momentum or rescaling it by the second moment. For a weight matrix of size $n \times m$, performing the optimizer step takes $O(mn)$ time given the gradient matrix as input. In contrast, many modern optimizers (Muon,[^muon] Scion,[^scion] Dion,[^dion] SOAP,[^soap] Shampoo,[^shampoo] SPlus,[^splus] etc.) use orthogonalization or higher-order preconditioning to compute the update to the weights at each training step. These methods require matrix multiplications that cost $O(mn^2)$ time (assuming $n \leq m$). Therefore, the runtime of each call to the optimizer is far greater than for AdamW. Depending on the training setup (global batch size, cluster size, and parallelism settings), Newton-Schulz accounts for between [2% and 17%](#appendix) of end-to-end wall clock time.
 
 While $O(mn^2)$ runtime is an unavoidable cost of these algorithms, there is still significant room for improvement in both FLOPs and wall clock time. As it is typically implemented, the Newton-Schulz routine has several shortcomings:
 
@@ -235,7 +235,7 @@ A standard implementation of Newton-Schulz looks like this:
 > 1. If $m < n$:&emsp;&emsp;$\mathbf X \gets \mathbf X^\top$&emsp;&emsp;&emsp;// Undo trick
 > 1. Return $\mathbf X$
 
-Successive work has sought to improve Muon in several ways. Most of these proposals modify Muon's update rule so as to reach the same loss in fewer training steps; however, they use the same Newton-Schulz routine described above. Some methods (e.g., Polar Express) do address Newton-Schulz by changing the sequence of polynomials or the normalization step.[^polar-express][^grishina] While they improve its approximation accuracy, they do not change its wall-clock runtime. The Dion optimizer[^dion] reduces the runtime in the distributed setting, when weights and gradients are sharded across different GPUs. It uses a low-rank approximation of Muon to reduce the communication cost and the dimension of $\mathbf X$, but each step still calls the standard Newton-Schulz routine.
+Successive work has sought to improve Muon in several ways. Most of these proposals modify Muon's update rule so as to reach the same loss in fewer training steps; however, they use the same Newton-Schulz routine described above. Some methods (e.g., Polar Express[^polar-express]) do address Newton-Schulz by changing the sequence of polynomials[^grishina] or the normalization step. While they improve its approximation accuracy, they do not change its wall-clock runtime. The Dion optimizer[^dion] reduces the runtime in the distributed setting, when weights and gradients are sharded across different GPUs. It uses a low-rank approximation of Muon to reduce the communication cost and the dimension of $\mathbf X$, but each step still calls the standard Newton-Schulz routine.
 
 In contrast, our work speeds up Newton-Schulz itself. Since Gram Newton-Schulz is mathematically identical to the standard version, it is compatible with nearly all varieties of Muon.
 
@@ -261,7 +261,7 @@ The matrices $\mathbf A = \mathbf X \mathbf X^\top$ and $\mathbf B = b_t \mathbf
 
 Even using symmetric GEMMs, Newton-Schulz's runtime is dominated by the large rectangular matrix multiplications needed to compute $\mathbf A$ and $\mathbf X$, which together cost $3\alpha n^3$ FLOPs per iteration. A typical implementation with $T=5$ requires 10 of these expensive rectangular multiplications.
 
-This strong dependence on $\alpha$ is unfortunate. Most of the weight matrices in transformer architectures are rectangular, including the MLP weights, MoE weights, and attention projection weights when using GQA or MLA.[^embeddings] Furthermore, we observe that the latest MoE architectures are trending towards finer-grained, sparser experts, meaning that the aspect ratios of their hidden dimensions to intermediate dimensions are increasing as well.[^kimi][^sonicmoe][^qwen][^gpt-oss]
+This strong dependence on $\alpha$ is unfortunate. Most of the weight matrices in transformer architectures are rectangular, including the MLP weights, MoE weights, and attention projection weights when using GQA or MLA.[^embeddings] Furthermore, we observe that the latest MoE architectures[^kimi] are trending towards finer-grained,[^sonicmoe] sparser experts,[^qwen] meaning that the aspect ratios of their hidden dimensions to intermediate dimensions are increasing as well.[^gpt-oss]
 
 Thus, at large scales, pretraining time would benefit greatly from an algorithm that uses fewer rectangular multiplications and more small symmetric ones.
 
@@ -369,7 +369,7 @@ We can understand how matrices evolve and why they diverge by studying their eig
 
 If $\mathbf X = \mathbf U \mathbf \Sigma \mathbf V^\top$ is the SVD of the input matrix, then intermediate matrices of Algorithm 2 ($\mathbf R_t$, $\mathbf Q_t$, $\mathbf Z_t$) are square symmetric with eigenvectors $\mathbf V$. In exact arithmetic, $\mathbf U^\top \mathbf R_t \mathbf U$ is a diagonal matrix containing $\mathbf R_t$'s eigenvalues, each of which corresponds to a singular value of $\mathbf X$. We can therefore plot the eigenvalues of $\mathbf R_t$ and $\mathbf Q_t$ against the corresponding singular values of $\mathbf X$ to track how each evolves according to the polynomial update rules—or diverges from them.
 
-To see how things should look, let's start by running Naive Gram Newton-Schulz in full `float64` precision for $10$ steps. We will use a synthetic input—a $128 \times 512$ matrix with an exponentially decaying spectrum. In order to make our plots more readable, with smooth monotonic curves, the experiments in this section use the coefficients $(a_t, b_t, c_t) = (\tfrac{15}8, \tfrac{10}8, \tfrac38)$ at every iteration. The numerical behavior we observe will generalize to other coefficients; those used in practice (like You Jiacheng's or Polar Express) will blow up at an even earlier iteration, matching the behavior we observe in training.[^you][^polar-express] Even though our method does not need to compute the intermediate matrices $\mathbf X_1, \ldots, \mathbf X_{T-1}$, we do so here for demonstration using the formula $\mathbf X_t = \mathbf Q_t \mathbf X_0$, where we label the input $\mathbf X_0$ for clarity.
+To see how things should look, let's start by running Naive Gram Newton-Schulz in full `float64` precision for $10$ steps. We will use a synthetic input—a $128 \times 512$ matrix with an exponentially decaying spectrum. In order to make our plots more readable, with smooth monotonic curves, the experiments in this section use the coefficients $(a_t, b_t, c_t) = (\tfrac{15}8, \tfrac{10}8, \tfrac38)$ at every iteration. The numerical behavior we observe will generalize to other coefficients; those used in practice (like You Jiacheng's[^you] or Polar Express[^polar-express]) will blow up at an even earlier iteration, matching the behavior we observe in training. Even though our method does not need to compute the intermediate matrices $\mathbf X_1, \ldots, \mathbf X_{T-1}$, we do so here for demonstration using the formula $\mathbf X_t = \mathbf Q_t \mathbf X_0$, where we label the input $\mathbf X_0$ for clarity.
 
 <!-- <iframe src="../PolarExpress/html_plots/f64_diagnostics.html" width="100%" height=300px></iframe> <!--style="border: none;"-->
 <!-- ![f64_diagnostics](https://hackmd.io/_uploads/B16nR9RKbe.gif) -->
@@ -665,7 +665,7 @@ In this sense, adding restarts can be viewed as trading wall clock time for grea
 
 # Symmetric GEMM Kernels in CuTeDSL
 
-To take advantage of the greater share of symmetric matrix multiplications enabled by Gram Newton-Schulz, we implement kernels for the operations $\mathbf A \mathbf B$ and $\alpha \mathbf A \mathbf B + \beta \mathbf C$ that assume $\mathbf A \mathbf B$ and $\mathbf C$ are symmetric. Symmetric kernels also accelerate standard Newton-Schulz; this idea has been around for a while for the construction of the Gram $\mathbf{XX^\top}$, but to our knowledge, hasn't been explored for fused symmetric matrix multiplication with addition.[^flashmuon][^laker] We target the Hopper and Blackwell GPU architectures and [open source](https://github.com/Dao-AILab/quack/blob/main/quack/gemm_symmetric.py) our implementation in the [Quack](https://github.com/Dao-AILab/quack) library of CuTeDSL kernels developed by our lab.
+To take advantage of the greater share of symmetric matrix multiplications enabled by Gram Newton-Schulz, we implement kernels for the operations $\mathbf A \mathbf B$ and $\alpha \mathbf A \mathbf B + \beta \mathbf C$ that assume $\mathbf A \mathbf B$ and $\mathbf C$ are symmetric. Symmetric kernels also accelerate standard Newton-Schulz;[^flashmuon] this idea has been around for a while[^laker] for the construction of the Gram $\mathbf{XX^\top}$, but to our knowledge, hasn't been explored for fused symmetric matrix multiplication with addition. We target the Hopper and Blackwell GPU architectures and [open source](https://github.com/Dao-AILab/quack/blob/main/quack/gemm_symmetric.py) our implementation in the [Quack](https://github.com/Dao-AILab/quack) library of CuTeDSL kernels developed by our lab.
 
 ![gemm_benchmarks (1)](https://hackmd.io/_uploads/BJq8sVPibl.png)
 
@@ -751,7 +751,7 @@ _Table 1: On Hopper, using symmetric kernels and Ping Pong Scheduling in GEMM + 
 
 # Training Experiments and Benchmarks
 
-We validate Gram Newton-Schulz's training quality and performance gain on Llama-430M, Qwen-600M, Gemma-1B, and a custom MoE-1B architecture with ~20% active parameters across 1 billion total parameters.[^llama][^qwen][^gemma]
+We validate Gram Newton-Schulz's training quality and performance gain on Llama-430M,[^llama] Qwen-600M,[^qwen] Gemma-1B,[^gemma] and a custom MoE-1B architecture with ~20% active parameters across 1 billion total parameters.
 
 We train on FineWeb-Edu. The number of training tokens for each dense model is given by the Chinchilla scaling law and for MoE-1B by twice the Chinchilla scaling law with respect to its active parameters. We use a cosine learning rate scheduler with the following base learning rates:
 
@@ -845,7 +845,7 @@ In low precision training, the forward and backward passes are computed in 4 bit
 
 ### Small global batch size
 
-When global batch size decreases, fewer microbatches are needed, so fewer forward and backward passes will occur per global training step. The optimizer time will remain the same, since it is agnostic to batch size. Therefore, the optimizer step will occupy a greater share of training time. For example, when SFT and RL use Muon, as in Kimi K2's post-training pipeline, batch sizes are significantly smaller than in pretraining.[^kimi][^SFT]
+When global batch size decreases, fewer microbatches are needed, so fewer forward and backward passes will occur per global training step. The optimizer time will remain the same, since it is agnostic to batch size. Therefore, the optimizer step will occupy a greater share of training time. For example, when SFT[^SFT] and RL use Muon, as in Kimi K2's[^kimi] post-training pipeline, batch sizes are significantly smaller than in pretraining.
 
 ### Optimizer step frequency is bottlenecked by optimizer duration
 
@@ -996,7 +996,7 @@ Thus, Newton-Schulz takes approximately $\frac{315\text{ ms}}{18140\text{ ms} + 
 
 ### Case Study 2: Standard Newton-Schulz occupies 17% of Llama3-70B SFT time
 
-Llama3-70B is a 80-layer dense model with hidden size 8192, intermediate size 28672, and grouped query attention with $1024 \times 8192$ $\mathbf W_k, \mathbf W_v$ weights and $8192 \times 8192$ $\mathbf W_q, \mathbf W_o$ weights.[^llama] Supervised finetuning (SFT) typically uses small batch sizes, ranging from $32$ to $256$ sequences.[^SFT][^deepseek]
+Llama3-70B is a 80-layer dense model with hidden size 8192, intermediate size 28672, and grouped query attention with $1024 \times 8192$ $\mathbf W_k, \mathbf W_v$ weights and $8192 \times 8192$ $\mathbf W_q, \mathbf W_o$ weights.[^llama] Supervised finetuning (SFT) typically uses small batch sizes,[^SFT] ranging from $32$ to $256$ sequences.[^deepseek]
 
 We construct the following SFT case:
 
