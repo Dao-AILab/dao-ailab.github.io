@@ -898,25 +898,25 @@ We believe that the stability analysis provided in this blog post lays the found
 [^ping-pong]: https://pytorch.org/blog/cutlass-ping-pong-gemm-kernel/
 [^num-iters]: Some variants set $T=6$ or $T=4$, but never anything else.
 [^polar-express]: https://openreview.net/forum?id=yRtgZ1K8hO
-[^PRISM]: https://arxiv.org/abs/2601.22137
-[^grishina]: https://arxiv.org/abs/2506.10935
-[^dion]: https://arxiv.org/abs/2504.05295
+[^PRISM]: [arXiv:2601.22137](https://arxiv.org/abs/2601.22137) - "PRISM: Distribution-free Adaptive Computation of Matrix Functions for Accelerating Neural Network Training"
+[^grishina]: [arXiv:2506.10935](https://arxiv.org/abs/2506.10935) - "Accelerating Newton-Schulz Iteration for Orthogonalization via Chebyshev-type Polynomials"
+[^dion]: [arXiv:2504.05295](https://arxiv.org/abs/2504.05295) - "Dion: Distributed Orthonormalized Updates"
 [^embeddings]: In the case of standard attention, the $\mathbf W_{QKV}$ matrix is rectangular with aspect ratio 3, but for unrelated reasons we divide it into three square matrices and apply Newton-Schulz to each as we discuss [here](#training-experiments-and-benchmarks). Other authors subdivide these matrices into separate weights for each head, making them highly rectangular. The embedding and unembedding matrices are also rectangular, but these are not typically optimized using Muon.
-[^moonshot-muon-is-scalable]: See section 2.2 of https://arxiv.org/abs/2502.16982.
-[^sonicmoe]: https://arxiv.org/abs/2512.14080
-[^llama]: https://arxiv.org/abs/2407.21783
-[^kimi]: https://arxiv.org/abs/2507.20534
-[^GLM]: https://arxiv.org/abs/2602.15763
-[^qwen]: https://arxiv.org/abs/2505.09388
-[^gpt-oss]: https://arxiv.org/abs/2508.10925
-[^deepseek]: https://arxiv.org/abs/2412.19437
-[^SFT]: https://arxiv.org/abs/2404.18922
-[^scion]: https://arxiv.org/abs/2502.07529
-[^soap]: https://arxiv.org/abs/2409.11321
-[^splus]: https://arxiv.org/abs/2506.07254
-[^shampoo]: https://arxiv.org/abs/1802.09568
+[^moonshot-muon-is-scalable]: See section 2.2 of [arXiv:2502.16982](https://arxiv.org/abs/2502.16982) - "Muon is Scalable for LLM Training"
+[^sonicmoe]: [arXiv:2512.14080](https://arxiv.org/abs/2512.14080) - "SonicMoE: Accelerating MoE with IO and Tile-aware Optimizations"
+[^llama]: [arXiv:2407.21783](https://arxiv.org/abs/2407.21783) - "The Llama 3 Herd of Models"
+[^kimi]: [arXiv:2507.20534](https://arxiv.org/abs/2507.20534) - "Kimi K2: Open Agentic Intelligence"
+[^GLM]: [arXiv:2602.15763](https://arxiv.org/abs/2602.15763) - "GLM-5: from Vibe Coding to Agentic Engineering"
+[^qwen]: [arXiv:2505.09388](https://arxiv.org/abs/2505.09388) - "Qwen3 Technical Report"
+[^gpt-oss]: [arXiv:2508.10925](https://arxiv.org/abs/2508.10925) - "gpt-oss-120b & gpt-oss-20b Model Card"
+[^deepseek]: [arXiv:2412.19437](https://arxiv.org/abs/2412.19437) - "DeepSeek-V3 Technical Report"
+[^SFT]: [arXiv:2404.18922](https://arxiv.org/abs/2404.18922) - "DPO Meets PPO: Reinforced Token Optimization for RLHF"
+[^scion]: [arXiv:2502.07529](https://arxiv.org/abs/2502.07529) - "Training Deep Learning Models with Norm-Constrained LMOs"
+[^soap]: [arXiv:2409.11321](https://arxiv.org/abs/2409.11321) - "SOAP: Improving and Stabilizing Shampoo using Adam"
+[^splus]: [arXiv:2506.07254](https://arxiv.org/abs/2506.07254) - "A Stable Whitening Optimizer for Efficient Neural Network Training"
+[^shampoo]: [arXiv:1802.09568](https://arxiv.org/abs/1802.09568) - "Shampoo: Preconditioned Stochastic Tensor Optimization"
 [^you]: https://x.com/YouJiacheng/status/1905861218138804534
-[^gemma]: https://arxiv.org/abs/2503.19786
+[^gemma]: [arXiv:2503.19786](https://arxiv.org/abs/2503.19786) - "Gemma 3 Technical Report"
 [^laker]: https://www.lakernewhouse.com/assets/writing/faster-symmul-with-thunderkittens.pdf
 [^flashmuon]: https://github.com/nil0x9/flash-muon
 [^JCZ_anecdote]: We had previously mentioned a fused symmetric quadratic kernel for $\mathbf a_t \mathbf I + b_t \mathbf A + c_t \mathbf A^2$ that we ended up passing on for stability reasons. Quack's abstraction was so convenient that Claude and I were able to write the register-level $\mathbf a_t \mathbf I$ fusion in 5 minutes on a car ride.
