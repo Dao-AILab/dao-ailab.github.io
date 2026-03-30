@@ -35,7 +35,7 @@ profiles:
     image: selfie.jpeg
     name: Wentao Guo
     website: https://wentaoguo.me
- 
+
   - role: phd-student
     image: xinle.png
     name: Xinle Cheng
@@ -43,7 +43,7 @@ profiles:
 
   - role: phd-student
     image: IMG_9228.jpg
-    name: Lijie(Derrick) Yang 
+    name: Lijie(Derrick) Yang
     website: https://derrickylj.github.io/
 
   - role: phd-student
@@ -57,8 +57,8 @@ profiles:
 
   - role: phd-student
     image: ZhuoqingSong.jpg
-    name: Zhuoqing Song 
-  
+    name: Zhuoqing Song
+
   - role: phd-student
     image: Mayank.jpg
     name: Mayank Mishra
@@ -88,6 +88,5 @@ profiles:
     name: Abiral Shakya
     linkedin: https://abiralshakya.github.io
 ---
-
 
 We are a research group at [Princeton University](https://www.princeton.edu/) led by professor Tri Dao.

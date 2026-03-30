@@ -2,8 +2,8 @@
   typeof exports === "object" && typeof module !== "undefined"
     ? factory(exports, require("fs"))
     : typeof define === "function" && define.amd
-      ? define(["exports", "fs"], factory)
-      : ((global = global || self), factory((global.dl = {}), global.fs));
+    ? define(["exports", "fs"], factory)
+    : ((global = global || self), factory((global.dl = {}), global.fs));
 })(this, function (exports, fs) {
   "use strict";
 
@@ -436,7 +436,7 @@
   }
 
   function createCommonjsModule(fn, module) {
-    return ((module = { exports: {} }), fn(module, module.exports), module.exports);
+    return (module = { exports: {} }), fn(module, module.exports), module.exports;
   }
 
   var bibtexParse = createCommonjsModule(function (module, exports) {
@@ -1507,32 +1507,32 @@
                     IS_GLOBAL && typeof target[key] != "function"
                       ? source[key]
                       : // bind timers to global for call from export context
-                        IS_BIND && own
-                        ? ctx(out, global)
-                        : // wrap global constructors for prevent change them in library
-                          IS_WRAP && target[key] == out
-                          ? (function (C) {
-                              var F = function (a, b, c) {
-                                if (this instanceof C) {
-                                  switch (arguments.length) {
-                                    case 0:
-                                      return new C();
-                                    case 1:
-                                      return new C(a);
-                                    case 2:
-                                      return new C(a, b);
-                                  }
-                                  return new C(a, b, c);
-                                }
-                                return C.apply(this, arguments);
-                              };
-                              F[PROTOTYPE] = C[PROTOTYPE];
-                              return F;
-                              // make static versions for prototype methods
-                            })(out)
-                          : IS_PROTO && typeof out == "function"
-                            ? ctx(Function.call, out)
-                            : out;
+                      IS_BIND && own
+                      ? ctx(out, global)
+                      : // wrap global constructors for prevent change them in library
+                      IS_WRAP && target[key] == out
+                      ? (function (C) {
+                          var F = function (a, b, c) {
+                            if (this instanceof C) {
+                              switch (arguments.length) {
+                                case 0:
+                                  return new C();
+                                case 1:
+                                  return new C(a);
+                                case 2:
+                                  return new C(a, b);
+                              }
+                              return new C(a, b, c);
+                            }
+                            return C.apply(this, arguments);
+                          };
+                          F[PROTOTYPE] = C[PROTOTYPE];
+                          return F;
+                          // make static versions for prototype methods
+                        })(out)
+                      : IS_PROTO && typeof out == "function"
+                      ? ctx(Function.call, out)
+                      : out;
                   // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%
                   if (IS_PROTO) {
                     (exports.virtual || (exports.virtual = {}))[key] = out;
@@ -1578,8 +1578,8 @@
                 typeof window != "undefined" && window.Math == Math
                   ? window
                   : typeof self != "undefined" && self.Math == Math
-                    ? self
-                    : Function("return this")());
+                  ? self
+                  : Function("return this")());
               if (typeof __g == "number") __g = global; // eslint-disable-line no-undef
             },
             {},
