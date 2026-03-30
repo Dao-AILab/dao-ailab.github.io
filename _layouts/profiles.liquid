@@ -6,16 +6,16 @@ layout: page
 
     <div class="clearfix">{{ content }}</div>
 
-    {% if page.research_interests %}
+    {% if page.research_topics %}
       <hr>
-      <h4>research interests</h4>
-      <div class="research-interests">{{ page.research_interests | markdownify }}</div>
+      <h4>Research Topics</h4>
+      <div class="research-topics">{{ page.research_topics | markdownify }}</div>
     {% endif %}
 
     {% assign latest_posts_size = site.posts | size %}
     {% if latest_posts_size > 0 %}
       <hr>
-      <h4>recent blog posts</h4>
+      <h4>Recent Blog Posts</h4>
       {% include latest_posts.liquid %}
     {% endif %}
 
@@ -25,7 +25,7 @@ layout: page
       {% if faculty_profiles.size > 0 %}
         <hr>
         <div>
-          <h4>faculty</h4>
+          <h4>Faculty</h4>
         </div>
         <div class="pi-grid">
           {% for profile in faculty_profiles %}
