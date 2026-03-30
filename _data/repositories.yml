@@ -1,14 +1,10 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - Dao-AILab
 
 repo_description_lines_max: 2
 
 github_repos:
-  - alshedivat/al-folio
-  - jekyll/jekyll
-  - twbs/bootstrap
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - mathjax/MathJax
-  - jpswalsh/academicons
+  - Dao-AILab/flash-attention
+  - state-spaces/mamba
+  - Dao-AILab/quack
+  - Dao-AILab/sonic-moe
