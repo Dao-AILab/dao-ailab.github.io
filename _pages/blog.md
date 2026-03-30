@@ -2,8 +2,8 @@
 layout: default
 permalink: /blog/
 title: blog
-nav: false
-nav_order: 1
+nav: true
+nav_order: 2
 pagination:
   enabled: true
   collection: posts
@@ -73,7 +73,7 @@ pagination:
 <div class="float-right">
 <i class="fa-solid fa-thumbtack fa-xs"></i>
 </div>
-<h3 class="card-title text-lowercase">{{ post.title }}</h3>
+<h3 class="card-title">{{ post.title }}</h3>
 <p class="card-text">{{ post.description }}</p>
 
                     {% if post.external_source == blank %}
