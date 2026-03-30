@@ -550,7 +550,7 @@ For example, most choices of Newton-Schulz polynomials are designed to converge 
 
 ![X_final_unbounded (4)](https://hackmd.io/_uploads/rkkBqyBcZl.png)
 
-_Figure 14: Theoretical behavior of both standard and Gram Newton-Schulz on $\sigma_{X*0}$ slightly above $1$ using Polar Express coefficients.*
+_Figure 14: Theoretical behavior of both standard and Gram Newton-Schulz on $\sigma\_{X\_0}$ slightly above $1$ using Polar Express coefficients._
 
 Even with a properly normalized input, perturbed singular values of $\mathbf X_0$ slightly greater than $1$ can develop due to numerical error.
 This problem affects standard Newton-Schulz as well, so the Polar Express polynomials are typically adjusted according to the formula
