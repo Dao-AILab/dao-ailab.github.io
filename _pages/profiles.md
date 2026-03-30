@@ -39,16 +39,22 @@ profiles:
   - role: phd-student
     image: xinle.png
     name: Xinle Cheng
+    more_info: >
+      Co-advised with <a href="https://www.cs.princeton.edu/~ravian/">Ravi Netravali</a>
     website: https://ada-cheng.github.io/
 
   - role: phd-student
     image: IMG_9228.jpg
     name: Lijie(Derrick) Yang
+    more_info: >
+      Co-advised with <a href="https://www.cs.princeton.edu/~ravian/">Ravi Netravali</a>
     website: https://derrickylj.github.io/
 
   - role: phd-student
     image: Liane.jpg
     name: Liane Galanti
+    more_info: >
+      Co-advised with <a href="https://www.ehazan.com/">Elad Hazan</a>
     website: https://lianegalanti.github.io
     twitter: https://x.com/lianegalanti
     linkedin: https://www.linkedin.com/in/liane-galanti-31879923a
@@ -62,6 +68,8 @@ profiles:
   - role: phd-student
     image: Mayank.jpg
     name: Mayank Mishra
+    more_info: >
+      Co-advised with <a href="https://people.eecs.berkeley.edu/~istoica/">Ion Stoica</a> and <a href="https://people.eecs.berkeley.edu/~jegonzal/">Joey Gonzalez</a>
     website: https://mayank31398.github.io/
 
   - role: ms-student
