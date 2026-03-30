@@ -1,8 +1,8 @@
 ---
 layout: profiles
 permalink: /
-title: people
-description: meet the team
+title: Research Group
+description:
 nav: false
 nav_order: 1
 
