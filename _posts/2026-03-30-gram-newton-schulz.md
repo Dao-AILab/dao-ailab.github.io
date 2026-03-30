@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: "Gram Newton-Schulz: A Fast, Hardware-Aware Newton-Schulz Algorithm for Muon"
-giscus_comments: true
+giscus_comments: false
 date: 2026-03-30
 featured: true
 related_posts: false
