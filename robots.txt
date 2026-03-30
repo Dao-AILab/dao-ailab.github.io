@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://dao-ailab.github.io/sitemap.xml
+Sitemap: https://dao-lab.ai/sitemap.xml
