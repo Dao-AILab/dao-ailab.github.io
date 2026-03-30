@@ -4,7 +4,7 @@ permalink: /
 title: people
 description: meet the team
 nav: false
-nav_order: 7
+nav_order: 1
 
 profiles:
   - role: faculty
