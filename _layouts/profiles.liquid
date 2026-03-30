@@ -6,6 +6,19 @@ layout: page
 
     <div class="clearfix">{{ content }}</div>
 
+    {% if page.research_interests %}
+      <hr>
+      <h4>research interests</h4>
+      <div class="research-interests">{{ page.research_interests | markdownify }}</div>
+    {% endif %}
+
+    {% assign latest_posts_size = site.posts | size %}
+    {% if latest_posts_size > 0 %}
+      <hr>
+      <h4>recent blog posts</h4>
+      {% include latest_posts.liquid %}
+    {% endif %}
+
     {% if page.profiles %}
       <!-- Faculty -->
       {% assign faculty_profiles = page.profiles | where: "role", "faculty" %}

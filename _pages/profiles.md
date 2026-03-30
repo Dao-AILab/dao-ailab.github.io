@@ -6,6 +6,15 @@ description: meet the team
 nav: false
 nav_order: 1
 
+research_topics: |
+  Machine learning and systems, with a focus on efficient training and inference:
+  - Hardware-aware algorithms.
+  - Sequence models with long-range memory.
+
+latest_posts:
+  limit: 5
+  scrollable: false
+
 profiles:
   - role: faculty
     image: tri_dao.jpeg
