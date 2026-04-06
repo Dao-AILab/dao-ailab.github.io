@@ -6,6 +6,42 @@ date: 2026-03-30
 featured: true
 related_posts: false
 
+# Optionally, you can add a table of contents to your post.
+# NOTES:
+#   - make sure that TOC names match the actual section names
+#     for hyperlinks within the post to work correctly.
+toc:
+  - name: Our Contributions
+  - name: Muon Recap
+    subsections:
+      - name: Runtime of Standard Newton-Schulz
+  - name: Gram Newton-Schulz
+    subsections:
+      - name: Runtime of Naive Gram Newton-Schulz
+  - name: Instability of Naive Gram Newton-Schulz
+    subsections:
+      - name: Tracking Eigenvalues of Intermediate Matrices
+      - name: Spurious Negative Eigenvalues
+      - name: Eigenvector Drift
+      - name: Stabilizing Gram Newton-Schulz by Restarting
+      - name: Further Precautions
+      - name: Takeaways on Stability
+  - name: Stabilized Gram Newton-Schulz
+    subsections:
+      - name: Runtime of Stabilized Gram Newton-Schulz
+  - name: Symmetric GEMM Kernels in CuTeDSL
+    subsections:
+      - name: Layout Engineering and Work Scheduling
+      - name: Implementation Strategy in Code
+      - name: Kernel Optimizations for Standard Newton-Schulz
+  - name: Training Experiments and Benchmarks
+    subsections:
+      - name: Model Quality is Preserved
+      - name: Our Method Speeds up the Optimizer Step
+  - name: Impact on End-to-End Training Time
+  - name: Conclusion
+  - name: Appendix
+
 authors:
   - name: Jack Zhang
     affiliations:
