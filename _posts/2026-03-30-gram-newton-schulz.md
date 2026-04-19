@@ -161,7 +161,7 @@ Muon is becoming the optimizer of choice for training state-of-the-art language 
 
 ![icml_optimizer_plot_blackwell (2)](https://hackmd.io/_uploads/ByJX-6BsWg.png)
 
-_Figure 1: AdamW vs. Muon: Wall clock time of optimizer step across Llama model sizes, benchmarked on B300._
+*Figure 1: AdamW vs. Muon: Wall clock time of optimizer step across Llama model sizes, benchmarked on B300.*
 
 Muon's superior optimization quality justifies its more expensive optimizer step. However, as model size scales up, the overhead of computing each Muon step grows rapidly. Traditional optimization methods (SGD, AdamW) perform element-wise operations, such as updating the momentum or rescaling it by the second moment. For a weight matrix of size $n \times m$, performing the optimizer step takes $O(mn)$ time given the gradient matrix as input. In contrast, many modern optimizers (Muon,[^muon] Scion,[^scion] Dion,[^dion] SOAP,[^soap] Shampoo,[^shampoo] SPlus,[^splus] etc.) use orthogonalization or higher-order preconditioning to compute the update to the weights at each training step. These methods require matrix multiplications that cost $O(mn^2)$ time (assuming $n \leq m$). Therefore, the runtime of each call to the optimizer is far greater than for AdamW. Depending on the training setup (global batch size, cluster size, and parallelism settings), Newton-Schulz accounts for between [2% and 17%](#appendix) of end-to-end wall clock time.
 
@@ -393,7 +393,7 @@ Let's try training a transformer LLM with Muon using Naive Gram Newton-Schulz:
 
 ![llama_430_no_reset](https://hackmd.io/_uploads/SJiRa6W9Wl.png)
 
-_Figure 2: Naive Gram Newton-Schulz on Llama-430M._
+*Figure 2: Naive Gram Newton-Schulz on Llama-430M.*
 
 This is no good. Not only do we get loss spikes, but eventually, the output of Gram Newton-Schulz is full of Infs! While Gram Newton-Schulz is mathematically equivalent to standard Newton-Schulz in exact arithmetic, it behaves differently in finite precision, especially in half precision.
 
@@ -412,7 +412,7 @@ To see how things should look, let's start by running Naive Gram Newton-Schulz i
 
 ![f64_diagnostics](https://hackmd.io/_uploads/Bkm4pJ_iZg.gif)
 
-_Figure 3: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ in Float64 in Naive Gram Newton-Schulz with coefficients $(\tfrac{15}8, \tfrac{10}8, \tfrac38)$._
+*Figure 3: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ in Float64 in Naive Gram Newton-Schulz with coefficients $(\tfrac{15}8, \tfrac{10}8, \tfrac38)$.*
 
 Initially, we have $r_0 = x_0^2$, and $q_0 = 1$. As the algorithm proceeds, we know that $x_t \to 1$, so we expect $r_t \to 1$ and $q_t = x_t / x_0 \to 1/x_0 = r_0^{-1/2}$ as per Theorem 1. Note that if $x_0$ is close to 1, the method converges quickly, while if $x_0$ is close to zero, it converges slowly. After 10 iterations, the spectrum of $\mathbf X_t$ is visually indistinguishable from $1$, as expected.
 
@@ -423,7 +423,7 @@ Now let's repeat the experiment using `bfloat16` instead of `float64` arithmetic
 
 ![f16_diagnostics](https://hackmd.io/_uploads/B1PA2ydo-e.gif)
 
-_Figure 4: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ in BFloat16 in Naive Gram Newton-Schulz with coefficients $(\tfrac{15}8, \tfrac{10}8, \tfrac38)$._
+*Figure 4: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ in BFloat16 in Naive Gram Newton-Schulz with coefficients $(\tfrac{15}8, \tfrac{10}8, \tfrac38)$.*
 
 The first few iterations proceed as before. However, by step 7, we see unexpected behavior in the spectrum of $\mathbf X_t$. The singular values that began near $0$ suddenly jump up above 1, instead of converging to 1 from below. By step 8, the algorithm is returning complete junk. What happened?
 
@@ -446,7 +446,7 @@ Let's transform the y-axis to emphasize values close to zero and replot this:
 
 ![f16_diagnostics_zoomed](https://hackmd.io/_uploads/ry9ZpJdjWg.gif)
 
-_Figure 5: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ in BFloat16, with the y-axis centered around $0$._
+*Figure 5: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ in BFloat16, with the y-axis centered around $0$.*
 
 Now we see that from the very beginning, $\mathbf R_0$ has tiny negative eigenvalues introduced in the first computation $\mathbf X_0 \mathbf X_0^\top$. Later computations can introduce additional negative eigenvalues to $\mathbf R_t$ too. These eigenvalues represent nothing about the original problem, they are just an artifact of floating point arithmetic. Therefore, we call them "spurious eigenvalues".
 
@@ -458,7 +458,7 @@ If we now substitute $h_t(x) = \tfrac{15}8 - \tfrac{10}8 x + \tfrac38 x^2$ and p
 
 ![r_update_map](https://hackmd.io/_uploads/HkOvAkujWe.svg)
 
-_Figure 6: Negative values of $r_t$ diverge towards negative infinity._
+*Figure 6: Negative values of $r_t$ diverge towards negative infinity.*
 
 As the plot shows, $r_t < \left(\tfrac{15}{8}\right)^2 r_{t-1}$. Thus, if $r_0 < 0$, the magnitude of the spurious eigenvalues grows exponentially! This sets off a chain reaction. As $r_t \to -\infty$, we get $z_t \to \infty$. This causes $q_t \to \infty$ and therefore also $x_t \to \infty$. This problem cannot be fixed by choosing different polynomials. Conceptually, in the main loop, we are attempting to compute the inverse square root of a negative number. It cannot help but diverge.
 
@@ -469,7 +469,7 @@ To show that the spurious negative eigenvalues of $\mathbf R_0$ are enough to ca
 
 ![posthoc_f16_diagnostics](https://hackmd.io/_uploads/HyEH0k_iZx.gif)
 
-_Figure 7: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ when all operations use Float64 except $\mathbf R_0 = \mathbf X \mathbf X^\top$._
+*Figure 7: Evolution of eigenvalues of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ when all operations use Float64 except $\mathbf R_0 = \mathbf X \mathbf X^\top$.*
 
 Recall that the average magnitude of a matrix's entries (root mean squared) is proportional to its Frobenius norm, which is larger than the largest singular value. Therefore, as $\mathbf Q_t$'s largest singular value blows up, its entries do too.
 
@@ -483,7 +483,7 @@ In exact arithmetic, the eigenvectors of all intermediate matrices match $\mathb
 
 ![easy_spectrum_diagnostics](https://hackmd.io/_uploads/HyuQYBm5-x.svg)
 
-_Figure 8: As the eigenvectors drift (left) the spectral norms of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ diverge._
+*Figure 8: As the eigenvectors drift (left) the spectral norms of $\mathbf R_t$, $\mathbf Q_t$, and $\mathbf X_t$ diverge.*
 
 ## Stabilizing Gram Newton-Schulz by Restarting
 
@@ -508,7 +508,7 @@ Since the eigenvalues of $\mathbf Q_t$ remain controlled, those of $\mathbf X_t 
 
 ![restart5_diagnostics](https://hackmd.io/_uploads/BJ5oC1_oZl.gif)
 
-_Figure 9: Restarting prevents the divergence of $\mathbf R_t$._
+*Figure 9: Restarting prevents the divergence of $\mathbf R_t$.*
 
 Restarting also helps control eigenvector drift. We repeat the experiment from above on the same matrix (with all singular values $> 0.017$), but now with a restart after step 5. We observe that the diagonalization error remains $\leq 0.05$ for all matrices, and the maximum eigenvalues now align closely with their values in exact arithmetic. Note that we always measure eigenvector drift relative to the original input $\mathbf X_0$, not the restarted $\mathbf X_5$.
 
@@ -516,7 +516,7 @@ Restarting also helps control eigenvector drift. We repeat the experiment from a
 
 ![easy_spectrum_restart2_diagnostics](https://hackmd.io/_uploads/rkmItSQ5Wx.svg)
 
-_Figure 10: Restarting prevents eigenvector drift._
+*Figure 10: Restarting prevents eigenvector drift.*
 
 ### When to Restart: Polar Express Coefficients for Muon
 
@@ -546,7 +546,7 @@ With no restart, they blow up:
 
 ![polar_no_restart_growth (1)](https://hackmd.io/_uploads/BJjkC1dsZl.svg)
 
-_Figure 11: Min/max eigenvalue of $\mathbf R_t$ and $\mathbf Q_t$ without restarts. $\mathbf R_0$ starts with a negative eigenvalue as low as $-4 \times 10^{-4}$._
+*Figure 11: Min/max eigenvalue of $\mathbf R_t$ and $\mathbf Q_t$ without restarts. $\mathbf R_0$ starts with a negative eigenvalue as low as $-4 \times 10^{-4}$.*
 
 Now let's repeat the experiment with a restarted version of the algorithm.
 To obtain a good balance of stability and speed, let's limit ourselves to a single restart.
@@ -560,7 +560,7 @@ Every time we restart and form $\mathbf R = \mathbf X\mathbf X^\top$, we subtrac
 
 ![polar1restart_results (1)](https://hackmd.io/_uploads/Hk4qTyuiZx.svg)
 
-_Figure 12: Minimum eigenvalue of $\mathbf R_t$ and condition number of $\mathbf Q_t$ if restart is placed after iteration $1$, $2$, $3$, or $4$. $\mathbf R_0$ starts with a negative eigenvalue as low as $-4 \times 10^{-4}$. Restarting after iteration $2$ provides the best bound on $\mathbf Q_t$._
+*Figure 12: Minimum eigenvalue of $\mathbf R_t$ and condition number of $\mathbf Q_t$ if restart is placed after iteration $1$, $2$, $3$, or $4$. $\mathbf R_0$ starts with a negative eigenvalue as low as $-4 \times 10^{-4}$. Restarting after iteration $2$ provides the best bound on $\mathbf Q_t$.*
 
 Note that restarting works precisely because we reset the minimum negative eigenvalue of $\mathbf R_t$, which in turn tightens the bound on $\mathbf Q_t$'s eigenvalues.
 In [our repo](https://github.com/Dao-AILab/gram-newton-schulz), we provide a utility that performs this analysis. For any given Newton-Schulz coefficients and any number of restarts, it identifies the best iterations at which to restart.
@@ -573,7 +573,7 @@ Now it converges! All singular values of $\mathbf X_t$ approach 1.
 
 ![final_diagnostics](https://hackmd.io/_uploads/HyJU6JOiWl.gif)
 
-_Figure 13: Restarting after $2$ iterations creates a stable polar decomposition of our test matrix with Polar Express coefficients._
+*Figure 13: Restarting after $2$ iterations creates a stable polar decomposition of our test matrix with Polar Express coefficients.*
 
 ## Further Precautions
 
@@ -586,7 +586,7 @@ For example, most choices of Newton-Schulz polynomials are designed to converge 
 
 ![X_final_unbounded (4)](https://hackmd.io/_uploads/rkkBqyBcZl.png)
 
-_Figure 14: Theoretical behavior of both standard and Gram Newton-Schulz on $\sigma\_{X\_0}$ slightly above $1$ using Polar Express coefficients._
+*Figure 14: Theoretical behavior of both standard and Gram Newton-Schulz on $\sigma\_{X\_0}$ slightly above $1$ using Polar Express coefficients.*
 
 Even with a properly normalized input, perturbed singular values of $\mathbf X_0$ slightly greater than $1$ can develop due to numerical error.
 This problem affects standard Newton-Schulz as well, so the Polar Express polynomials are typically adjusted according to the formula
@@ -705,7 +705,7 @@ To take advantage of the greater share of symmetric matrix multiplications enabl
 
 ![gemm_benchmarks (1)](https://hackmd.io/_uploads/BJq8sVPibl.png)
 
-_Figure 15: SOTA Symmetric GEMM Kernels benchmarked on Hopper and Blackwell against cuBLAS._
+*Figure 15: SOTA Symmetric GEMM Kernels benchmarked on Hopper and Blackwell against cuBLAS.*
 
 ## Layout Engineering and Work Scheduling
 
@@ -736,7 +736,7 @@ In the GEMM epilogue, when the computed values of the lower triangle are written
 
 ![symm_gemm_diagram (1)](https://hackmd.io/_uploads/SkkoEAVq-e.png)
 
-_Figure 16: Symmetric GEMM only computes $256 \times 256$ work tiles on the diagonal and in the lower triangle, copying and transposing each lower tile to its transposed location in the upper triangle._
+*Figure 16: Symmetric GEMM only computes $256 \times 256$ work tiles on the diagonal and in the lower triangle, copying and transposing each lower tile to its transposed location in the upper triangle.*
 
 We implement all of our symmetric GEMM kernels with square cluster work tiles. Hopper uses cluster size $(2, 1)$ and thread block tile size $(128, 256)$, and Blackwell uses cluster size $(2, 1)$ and 2-CTA collaboration, in which the 2 thread blocks in the cluster collaborate on the same big $(256, 256)$ tile.
 
@@ -822,11 +822,11 @@ Still, we believe that there are other settings like GLM-5 where this strategy w
 We see loss preserved as follows, when both using the Polar Express coefficients and the coefficients derived by You Jiacheng:[^you]
 ![validation_perplexity_hopper](https://hackmd.io/_uploads/ryyhZAroWe.png)
 
-_Figure 17: Validation perplexity is always preserved within 0.01. We train with Muon using the Chinchilla scaling law on Hopper._
+*Figure 17: Validation perplexity is always preserved within 0.01. We train with Muon using the Chinchilla scaling law on Hopper.*
 
 ![moe_1b_blackwell_ppl](https://hackmd.io/_uploads/ryrgMRrsZx.png)
 
-_Figure 18: Validation perplexity is preserved within 0.01. We train with Muon using the Chinchilla scaling law on Blackwell._
+*Figure 18: Validation perplexity is preserved within 0.01. We train with Muon using the Chinchilla scaling law on Blackwell.*
 
 ## Our Method Speeds up the Optimizer Step
 
@@ -835,18 +835,18 @@ We observe that our method speeds up the runtime of the Newton-Schulz step in ea
 
 ![icml_ns_breakdown (6)](https://hackmd.io/_uploads/BJy11AZoWe.png)
 
-_Figure 19: Hopper architecture Newton-Schulz time per model weight. Very rectangular weights like Up/Gate and Down in Gemma-1B will especially benefit from Gram Newton-Schulz, while square weights like Llama-430M's attention weights will just benefit from the kernels. The speedup on MoE-1B for Up/Gate and Down doesn't even take advantage of the symmetric kernel, since the small intermediate size of $256$ is exactly the tile size. The speedup is fully algorithmic._
+*Figure 19: Hopper architecture Newton-Schulz time per model weight. Very rectangular weights like Up/Gate and Down in Gemma-1B will especially benefit from Gram Newton-Schulz, while square weights like Llama-430M's attention weights will just benefit from the kernels. The speedup on MoE-1B for Up/Gate and Down doesn't even take advantage of the symmetric kernel, since the small intermediate size of $256$ is exactly the tile size. The speedup is fully algorithmic.*
 
 ![icml_ns_breakdown_b300](https://hackmd.io/_uploads/Bk1YJCZj-x.png)
 
-_Figure 20: Blackwell architecture Newton-Schulz time per model weight. The speedup on MoE-1B for Up/Gate and Down is fully algorithmic, like in Figure 17._
+*Figure 20: Blackwell architecture Newton-Schulz time per model weight. The speedup on MoE-1B for Up/Gate and Down is fully algorithmic, like in Figure 17.*
 
 **End-to-End Optimizer Performance**
 The following figure shows the end-to-end wall clock time of the optimizer step for each method. For Muon, these timings include the AdamW updates for weights not assigned to Muon (such as the embedding layer and the vector-valued weights), PyTorch operations for splitting and reconcatenating weights, and learning rate scaling.
 
 ![icml_optimizer_plot2 (4)](https://hackmd.io/_uploads/r1s2fCZjWg.png)
 
-_Figure 21: Hopper architecture end-to-end optimizer step during training, including matrix splitting and recombination for QKV and MLP, LR scaling, master weight updates, and the scalar optimizer (AdamW) step for non-2D weights._
+*Figure 21: Hopper architecture end-to-end optimizer step during training, including matrix splitting and recombination for QKV and MLP, LR scaling, master weight updates, and the scalar optimizer (AdamW) step for non-2D weights.*
 
 These results allow us to measure the impact of our optimized kernels separately from that of our Gram Newton-Schulz algorithm. We see that both pieces contribute significantly to the speedup. We observe that Llama-430M's and Qwen-600M's smaller, square weights benefit from the kernels - again, we stress that square architectures are the rare case. Meanwhile, Gemma benefits from both the algorithm and kernels, seeing the biggest speedup due to its MLP weights' higher aspect ratio of $8$ instead of $4$.
 
@@ -863,11 +863,11 @@ In the [Appendix](#appendix), we approximate the exposed Newton-Schulz wall cloc
 
 ![kimi (2)](https://hackmd.io/_uploads/B1w5VCZjbe.png)
 
-_Figure 22: On Hopper, Gram Newton-Schulz is $2\times$ faster than standard Newton-Schulz in Kimi K2's pipeline parallelism configuration._
+*Figure 22: On Hopper, Gram Newton-Schulz is $2\times$ faster than standard Newton-Schulz in Kimi K2's pipeline parallelism configuration.*
 
 ![kimi_b300](https://hackmd.io/_uploads/HkQAVRZoWe.png)
 
-_Figure 23: On Blackwell, Gram Newton-Schulz is $2\times$ faster than standard Newton-Schulz in Kimi K2's pipeline parallelism configuration._
+*Figure 23: On Blackwell, Gram Newton-Schulz is $2\times$ faster than standard Newton-Schulz in Kimi K2's pipeline parallelism configuration.*
 
 Observe that the speedup of Gram Newton-Schulz over standard Newton-Schulz in `torch` is twice the speedup of standard Newton-Schulz in CuTeDSL over standard Newton-Schulz in `torch`, showing the contribution of the new algorithm.
 
