@@ -1,6 +1,7 @@
 ---
 layout: distill
 title: "SonicMoE: A Hardware-Efficient and Software-Extensible Blueprint for Fine-Grained MoEs"
+thumbnail: assets/img/2026-04-22-sonicmoe/blogpost_thumbnail.png
 giscus_comments: false
 date: 2026-04-22
 featured: true
