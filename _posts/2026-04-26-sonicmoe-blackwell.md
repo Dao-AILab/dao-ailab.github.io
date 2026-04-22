@@ -43,7 +43,7 @@ authors:
       name: Princeton University
   - name: Mayank Mishra
     affiliations:
-      name: IBM Research
+      name: UC Berkeley
   - name: Xinle Cheng
     affiliations:
       name: Princeton University
