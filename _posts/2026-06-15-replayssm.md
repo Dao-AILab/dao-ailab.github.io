@@ -4,10 +4,10 @@ title: "ReplaySSM: Cache SSM Inputs, Not State"
 description:
 tags:
 giscus_comments: false
-date: 2026-06-14
+date: 2026-06-15
 featured: true
 bibliography: replayssm.bib
-thumbnail: assets/img/2026-06-14-replayssm/headline_approach.png
+thumbnail: assets/img/2026-06-15-replayssm/headline_approach.png
 
 toc:
   - name: "1. State Space Models (SSMs)"
@@ -51,9 +51,9 @@ authors:
 
 > Current SSM decoding updates and writes recurrent state back to HBM every step. ReplaySSM instead caches recent inputs, reconstructing the state only when needed and otherwise computing the output directly from the cache. 
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/headline_approach.png" caption="Figure 1a. ReplaySSM caches recent SSM inputs instead of storing the recurrent state every step, reconstructing states on the fly and writing back only when the buffer is full."%}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/headline_approach.png" caption="Figure 1a. ReplaySSM caches recent SSM inputs instead of storing the recurrent state every step, reconstructing states on the fly and writing back only when the buffer is full."%}
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/headline_results.png" caption="Figure 1b. End-to-end decoding throughput in vLLM (CUDA Graph enabled), normalized to vLLM's standard decoding at serving batch sizes. Left: ReplaySSM speeds up standard decoding by up to 1.43x. Right: vLLM's existing speculative decoding falls below standard-decoding throughput at serving batch sizes, while ReplaySSM speculative decoding delivers 1.87–1.96x. Speculative window = 4 and all models are NVFP4 on B300." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/headline_results.png" caption="Figure 1b. End-to-end decoding throughput in vLLM (CUDA Graph enabled), normalized to vLLM's standard decoding at serving batch sizes. Left: ReplaySSM speeds up standard decoding by up to 1.43x. Right: vLLM's existing speculative decoding falls below standard-decoding throughput at serving batch sizes, while ReplaySSM speculative decoding delivers 1.87–1.96x. Speculative window = 4 and all models are NVFP4 on B300." %}
 
 
 <p align="left">
@@ -132,7 +132,7 @@ One might expect the attention layers in a hybrid model to dominate latency beca
 
 Three factors lead to this result. First, the $$O(N)$$ attention cost remains modest at short to middle context lengths. Second, SSM layers typically outnumber attention layers by a factor of three to six.<d-footnote>Qwen3.5 uses a ratio of 3:1; Nemotron-3-Ultra uses a ratio of 4:1; Nemotron-3-Super uses a ratio of 5:1.</d-footnote> Third, optimization efforts have concentrated on attention kernels, while SSM kernels have received far less attention.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/motivation-latencybreakdown.png" caption="Figure 2. Latency breakdown for Nemotron-3-Super-120B-A12B-NVFP4 with batch size 256 on single B300. Despite attention scaling with context length, SSM kernel latency, which is mostly fixed across context length, remains the largest component up to 100K tokens." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/motivation-latencybreakdown.png" caption="Figure 2. Latency breakdown for Nemotron-3-Super-120B-A12B-NVFP4 with batch size 256 on single B300. Despite attention scaling with context length, SSM kernel latency, which is mostly fixed across context length, remains the largest component up to 100K tokens." %}
 
 <!-- | Layer | Per-step load | Per-step store | # layers (Nemotron-3-Ultra)|
 | --- | --- | --- | --- |
@@ -148,7 +148,7 @@ This becomes a problem when inference needs to rewind. Speculative decoding, wid
 
 Attention handles rollback naturally. It moves the sequence pointer in the KV cache backward, and the rejected keys and values are no longer used. An SSM does not have an explicit token history to point into. The history is **compressed** into the recurrent state, and the raw inputs are gone. Figure 3 contrasts the two.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/rollback.png" caption="Figure 3. Attention rolls back by moving a KV-cache pointer, while an SSM has irreversibly summarized its inputs into the state and cannot undo them." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/rollback.png" caption="Figure 3. Attention rolls back by moving a KV-cache pointer, while an SSM has irreversibly summarized its inputs into the state and cannot undo them." %}
 
 The common workaround, used for example in vLLM, is to store a separate SSM state for every speculative token. On rejection, the system restores the state that corresponds to the last accepted token. This adds $$T$$ times more memory traffic per decoding step to an already memory-bound path, where $$T$$ is the speculative window. This overhead means speculative decoding, a reliable speedup for Transformers, barely helps SSMs at serving batch sizes, creating a major disadvantage.
 
@@ -258,7 +258,7 @@ ReplaySSM caches the recent SSM inputs (e.g., the draft tokens) explicitly. It d
 key="wang2024mamba"></d-cite> and STree<d-cite key="wu2026stree"></d-cite> take a
 different approach to rollback and state handling; see Appendix for details.</d-footnote> There is no full state to restore for each rejected token, and no per-token state copy to keep in memory for recovery. Figure 4 illustrates this with a two-step example.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/rollback_solution.png" caption="Figure 4. ReplaySSM caches each draft's raw inputs, so rolling back rejected drafts is just a pointer move with no state write-back." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/rollback_solution.png" caption="Figure 4. ReplaySSM caches each draft's raw inputs, so rolling back rejected drafts is just a pointer move with no state write-back." %}
 
 Speculative decoding triggers flushes (state updates when the buffer is full) more frequently because verification appends multiple proposed tokens at once, causing the buffer to fill faster for a fixed buffer size.
 
@@ -307,7 +307,7 @@ The left route builds the full state with an outer product, $$v k^\top$$, then r
 
 The right route never materializes the state. It first computes the inner product $$k^\top q$$, then scales $$v$$ with that scalar. It gives the same output, but not the state. Figure 5a contrasts the two routes.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/output_only.png" caption="Figure 5a. Two routes to the same output. One builds the full state $S = v k^\top$ then reads it with $q$, the other forms the scalar $k^\top q$ first and scales $v$, never materializing the state." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/output_only.png" caption="Figure 5a. Two routes to the same output. One builds the full state $S = v k^\top$ then reads it with $q$, the other forms the scalar $k^\top q$ first and scales $v$, never materializing the state." %}
 
 **ReplaySSM can choose either route.**
 
@@ -339,7 +339,7 @@ In the following, we use Mamba-2 as the example. The algorithms for Gated DeltaN
 
 This is the output-only form. It still reads the checkpoint state and the recent input buffer, but it does not materialize a $$d \times n$$ state per head. Notably, since $$k$$ and $$q$$ are shared across a group of heads, the output-only form also gives us the benefit of precomputing $$k_j^\top q_t$$. Figure 5b shows both routes with their matrix shapes.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/output_only_general.png" caption="Figure 5b. The two routes with ReplaySSM. The state-and-output route materializes $S_t$ then reads it with $q_t$, while the output-only route computes $K^\top q_t$ first and never materializes the state." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/output_only_general.png" caption="Figure 5b. The two routes with ReplaySSM. The state-and-output route materializes $S_t$ then reads it with $q_t$, while the output-only route computes $K^\top q_t$ first and never materializes the state." %}
 
 In the following, we use Mamba-2 as the example. The algorithms for Gated DeltaNet are placed in the Appendix.
 
@@ -537,7 +537,7 @@ Figure 6 reports SSM-kernel and end-to-end per-step speedup at batch size 256 ov
 
 ReplaySSM makes SSM decoding faster, and the kernel speedup translates into **end-to-end speedup on hybrid models across different SSM families and model sizes (from 4B to 550B).** On Nemotron-3, ReplaySSM reaches 1.43x to 1.84x kernel and 1.20x to 1.48x end-to-end speedup. On Qwen3.5, ReplaySSM reaches 1.43x to 1.64x kernel and 1.20x to 1.27x end-to-end speedup. The end-to-end speedup is smaller because ReplaySSM targets only the SSM kernel, while attention, GEMMs, and the rest are unchanged.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/ar-e2espeedup.png" caption="Figure 6. Kernel-level and end-to-end per-step speedup over vLLM's baseline across the Nemotron-3 and Qwen3.5 families (batch size 256, 1K decoding steps)." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/ar-e2espeedup.png" caption="Figure 6. Kernel-level and end-to-end per-step speedup over vLLM's baseline across the Nemotron-3 and Qwen3.5 families (batch size 256, 1K decoding steps)." %}
 
 **Trade-offs of different buffer capacities**
 
@@ -545,7 +545,7 @@ The buffer size in ReplaySSM introduces a trade-off. A shorter buffer flushes mo
 
 <!-- The bell-shaped trend in Figure 7 shows this trade-off. **A medium-sized buffer balances the two costs and achieves the largest speedup.** -->
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/ar-buffersize.png" caption="Figure 7. Kernel speedup of ReplaySSM over the baseline for buffer sizes 4, 8, 16, and 32 at batch sizes 64 and 256." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/ar-buffersize.png" caption="Figure 7. Kernel speedup of ReplaySSM over the baseline for buffer sizes 4, 8, 16, and 32 at batch sizes 64 and 256." %}
 
 <a id="6-2-speculative-decoding"></a>
 ### 6.2 Speculative decoding
@@ -554,25 +554,25 @@ The buffer size in ReplaySSM introduces a trade-off. A shorter buffer flushes mo
 
 We test end-to-end throughput (tokens/s) on vLLM using prompts from the GSM8K dataset<d-cite key="gsm8k"></d-cite> (speculative window = 4, temperature = 0), sweeping batch size up to 512. ReplaySSM preserves the same draft acceptance behavior while consistently outperforming standard decoding and vLLM's speculative decoding baseline. At the largest batches, ReplaySSM reaches 1.87–1.96× over standard decoding and up to 2.14× over the baseline speculative path, and the gap widens with batch size. Since acceptance is identical across all three systems (bottom panels), the throughput gain comes from two sources: **faster verification per step** and **higher concurrency.** We break these down next.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/spec-e2ethroughput.png" caption="Figure 8. End-to-end decoding throughput versus batch size on GSM8K prompts (speculative window 4, temperature 0, MTP drafter). Bottom: accepted tokens per step are identical for baseline and ReplaySSM." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/spec-e2ethroughput.png" caption="Figure 8. End-to-end decoding throughput versus batch size on GSM8K prompts (speculative window 4, temperature 0, MTP drafter). Bottom: accepted tokens per step are identical for baseline and ReplaySSM." %}
 
 **Breakdown 1: faster decode steps**
 
 The baseline's verification cost grows almost linearly with the speculative window, because it stores a full SSM state per draft token on an already memory-bound path. Figure 9 shows this on Qwen3.5-122B. At $$T=6$$ the baseline kernel costs 4.85× the standard decoding kernel. ReplaySSM's state traffic is one checkpoint load plus an occasional flush, so its cost stays near flat, between 1.27× and 1.72× at $$T=6$$ depending on how many drafts are accepted (more acceptance advances the buffer faster and flushes more often).
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/spec-specwindow.png" caption="Figure 9. Speculative decoding kernel latency on Qwen3.5-122B-A10B-NVFP4, normalized to vLLM standard decoding (batch size 128, buffer size 16, 1×B300). The shaded band spans the all-reject to all-accept cases." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/spec-specwindow.png" caption="Figure 9. Speculative decoding kernel latency on Qwen3.5-122B-A10B-NVFP4, normalized to vLLM standard decoding (batch size 128, buffer size 16, 1×B300). The shaded band spans the all-reject to all-accept cases." %}
 
 Figure 10 further shows how kernel speedup propagates to full decode step speedup. The 2.28–3.33× kernel speedup translates to 1.23–1.69× on the verify forward pass, then 1.20–1.58× on the full decode step once draft-model and preprocessing overheads are included. 
 
 <br>
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/spec-speedupbreakdown.png" caption="Figure 10. Speedup over vLLM's speculative decoding baseline at the kernel, verify forward pass, and full decode step levels (speculative window 4)." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/spec-speedupbreakdown.png" caption="Figure 10. Speedup over vLLM's speculative decoding baseline at the kernel, verify forward pass, and full decode step levels (speculative window 4)." %}
 
 **Breakdown 2: higher maximum concurrency**
  
 The per-draft snapshots also cost capacity. Under a fixed HBM budget (window = 4), the baseline's preallocated states cut the maximum decode batch by roughly 4× relative to standard serving. ReplaySSM caches small input vectors instead of full states, recovering 3.0–3.3× of that concurrency (Figure 11). For a throughput-oriented deployment the **maximum concurrency matters as much as per-step latency**. It determines how many requests the speculative path can serve at all.
 
-{% include figure.liquid loading="eager" path="assets/img/2026-06-14-replayssm/spec-maxconcurrency.png" caption="Figure 11. Maximum decode concurrency under a fixed HBM budget (speculative window 4). ReplaySSM supports 3.0–3.3× more concurrent requests than the baseline speculative path." %}
+{% include figure.liquid loading="eager" path="assets/img/2026-06-15-replayssm/spec-maxconcurrency.png" caption="Figure 11. Maximum decode concurrency under a fixed HBM budget (speculative window 4). ReplaySSM supports 3.0–3.3× more concurrent requests than the baseline speculative path." %}
 
 Together, these two effects explain the trends in Figure 8. Cheaper verification lifts the entire curve, while the smaller memory footprint allows ReplaySSM to continue scaling with batch size where the baseline flattens out.
 
