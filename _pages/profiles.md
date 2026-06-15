@@ -81,6 +81,11 @@ profiles:
       Co-advised with <a href="https://people.eecs.berkeley.edu/~istoica/">Ion Stoica</a> and <a href="https://people.eecs.berkeley.edu/~jegonzal/">Joey Gonzalez</a>
     website: https://mayank31398.github.io/
 
+  - role: phd-student
+    image: ZeWei.png
+    name: Ze-Wei Liou
+    website: https://johnny-liou.github.io
+
   - role: ms-student
     image: photo_2026.jpg
     name: Nicholas Yap
