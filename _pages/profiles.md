@@ -86,6 +86,13 @@ profiles:
     name: Ze-Wei Liou
     website: https://johnny-liou.github.io
 
+  - role: phd-student
+    image: zhifei.jpg
+    name: Zhifei Li
+    more_info: >
+      Co-advised with <a href="https://www.cs.princeton.edu/~ravian/">Ravi Netravali</a>
+    website: https://zhifei.li/
+
   - role: ms-student
     image: photo_2026.jpg
     name: Nicholas Yap
