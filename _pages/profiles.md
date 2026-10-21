@@ -93,6 +93,11 @@ profiles:
       Co-advised with <a href="https://www.cs.princeton.edu/~ravian/">Ravi Netravali</a>
     website: https://zhifei.li/
 
+  - role: phd-student
+    image: bo_peng.jpg
+    name: Bo Peng
+    website: https://p-b-p-b.github.io/
+
   - role: ms-student
     image: photo_2026.jpg
     name: Nicholas Yap
