@@ -11,6 +11,11 @@ research_topics: |
   - Hardware-aware algorithms.
   - Sequence models with long-range memory.
 
+announcements:
+  enabled: true
+  scrollable: true
+  limit: 5
+
 latest_posts:
   limit: 5
   scrollable: false

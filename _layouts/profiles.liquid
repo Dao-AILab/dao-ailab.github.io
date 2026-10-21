@@ -12,6 +12,12 @@ layout: page
       <div class="research-topics">{{ page.research_topics | markdownify }}</div>
     {% endif %}
 
+    {% if page.announcements and page.announcements.enabled %}
+      <hr>
+      <h4><a href="{{ '/news/' | relative_url }}" style="color: inherit">News</a></h4>
+      {% include news.liquid limit=true %}
+    {% endif %}
+
     {% assign latest_posts_size = site.posts | size %}
     {% if latest_posts_size > 0 %}
       <hr>
