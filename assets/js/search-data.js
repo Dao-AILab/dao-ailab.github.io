@@ -35,16 +35,14 @@ ninja.data = [{
           description: "",
           section: "Books",handler: () => {
               window.location.href = "/books/the_godfather/";
-            },},{id: "news-a-simple-inline-announcement",
-          title: 'A simple inline announcement.',
+            },},{id: "news-rigel-a-hybrid-mamba-attention-moe-approaching-llama-3-2-quality-with-a-fraction-of-the-training-compute-trained-on-a-mix-of-a100s-h100s-and-tpus-thanks-to-mayank",
+          title: 'Rigel: a hybrid Mamba–attention MoE approaching Llama-3.2 quality with a fraction of the...',
           description: "",
-          section: "News",},{id: "news-a-long-announcement-with-details",
-          title: 'A long announcement with details',
+          section: "News",},{id: "news-building-on-our-earlier-blog-post-ze-wei-and-nvidia-collaborators-released-replayssm-this-makes-inference-optimizations-like-speculative-decoding-and-cache-quantization-more-efficient-for-hybrid-models",
+          title: 'Building on our earlier blog post, Ze-Wei and NVIDIA collaborators released ReplaySSM. This...',
           description: "",
-          section: "News",handler: () => {
-              window.location.href = "/news/announcement_2/";
-            },},{id: "news-a-simple-inline-announcement-with-markdown-emoji-sparkles-smile",
-          title: 'A simple inline announcement with Markdown emoji! :sparkles: :smile:',
+          section: "News",},{id: "news-flat-fast-open-source-tpu-training-kernels-for-linear-attention-and-mamba-2-tpu-kernels-face-different-bottlenecks-than-gpu-kernels",
+          title: 'FLAT: fast, open-source TPU training kernels for linear attention and Mamba-2. TPU kernels...',
           description: "",
           section: "News",},{id: "projects-project-1",
           title: 'project 1',
