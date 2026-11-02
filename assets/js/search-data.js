@@ -35,7 +35,10 @@ ninja.data = [{
           description: "",
           section: "Books",handler: () => {
               window.location.href = "/books/the_godfather/";
-            },},{id: "news-rigel-a-hybrid-mamba-attention-moe-approaching-llama-3-2-quality-with-a-fraction-of-the-training-compute-trained-on-a-mix-of-a100s-h100s-and-tpus-thanks-to-mayank",
+            },},{id: "news-4-papers-accepted-to-neurips-2026-m-rnn-non-linear-rnns-with-matrix-valued-states-for-scalable-language-modeling-gpu-hierarchy-meets-structured-matrices-fast-algorithms-for-state-space-models-coda-rewriting-transformer-blocks-as-gemm-epilogue-programs-nyoomfloat12-accelerating-llm-inference-via-lossless-12-bit-weight-compression",
+          title: '4 papers accepted to NeurIPS 2026: M²RNN: Non-Linear RNNs with Matrix-Valued States for...',
+          description: "",
+          section: "News",},{id: "news-rigel-a-hybrid-mamba-attention-moe-approaching-llama-3-2-quality-with-a-fraction-of-the-training-compute-trained-on-a-mix-of-a100s-h100s-and-tpus-thanks-to-mayank",
           title: 'Rigel: a hybrid Mamba–attention MoE approaching Llama-3.2 quality with a fraction of the...',
           description: "",
           section: "News",},{id: "news-building-on-our-earlier-blog-post-ze-wei-and-nvidia-collaborators-released-replayssm-this-makes-inference-optimizations-like-speculative-decoding-and-cache-quantization-more-efficient-for-hybrid-models",
